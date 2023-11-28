@@ -2,6 +2,8 @@ import React from 'react';
 import { useAuth } from '../context/Auth.Context';
 import { useForm, useFieldArray } from 'react-hook-form'; // Corrección aquí
 import { useEventos } from '../context/EventosContest';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function EventosCreate() {
     const { user } = useAuth();
@@ -14,12 +16,13 @@ export default function EventosCreate() {
         control,
         name: "invitados"
     });
+    const navigate = useNavigate();
     const { createEventos } = useEventos();
 
     const onSubmit = async (data) => {
         try {
             await createEventos({ ...data, organizador: user.id });
-            reset();
+            navigate('/eventos');
         } catch (error) {
             console.error('Error al crear evento:', error);
         }

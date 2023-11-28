@@ -5,19 +5,23 @@ import QRCode from 'qrcode';
 import { uploadImage } from '../libs/cloudinary.js'
 
 const getEventos = async (req, res) => {
-    const eventos = await Evento.find({
-        user: req.user.id
-    })
-    const userFound = await User.findById(req.user.id)
-    return res.json({
-        id: userFound._id,
-        username: userFound.username,
-        email: userFound.email,
-        roles: userFound.roles
-    })
+    try {
+        const organizadorId = req.params.userId; // Obtiene el ID del organizador de los parámetros de ruta
+        const eventos = await Evento.find({ organizador: organizadorId })
+                                    .populate('organizador', 'nombre email'); // Omitir o modificar 'populate' según tus necesidades
 
+        if (!eventos || eventos.length === 0) {
+            return res.status(404).json({ mensaje: 'No se encontraron eventos para el organizador.' });
+        }
 
+        return res.json(eventos);
+    } catch (error) {
+        console.error('Error al obtener eventos:', error);
+        return res.status(500).json({ mensaje: 'Error al obtener eventos', error });
+    }
 };
+
+
 
 
 const transporter = nodemailer.createTransport({

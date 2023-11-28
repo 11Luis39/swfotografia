@@ -1,10 +1,45 @@
-import React from 'react'
-import {useAuth} from '../context/Auth.Context'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/Auth.Context'
+import { useEventos } from '../context/EventosContest';
 
 export default function eventos() {
-  const {user} = useAuth();
-  console.log (user)
-  return (
-    <div>eventos</div>
-  )
+    const { user } = useAuth();
+    const { eventos, fetchEventos } = useEventos();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user && user.id) {
+            fetchEventos(user.id);
+        }
+    }, [user, fetchEventos]);
+
+    const irACrearEvento = () => {
+        navigate('/EventosCreate'); // Reemplaza con la ruta correcta
+    };
+    return (
+        <div className="bg-gray-800 min-h-screen p-5">
+            <h1 className="text-3xl font-bold mb-5">Mis Eventos</h1>
+            <button
+                onClick={irACrearEvento}
+                className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+                Crear Nuevo Evento
+            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {eventos.length > 0 ? (
+                    eventos.map((evento, index) => (
+                        <div key={evento._id || index} className="bg-gray-700 p-4 rounded-lg shadow-md">
+                            <h2 className="text-xl font-semibold">{evento.nombre}</h2>
+                            <p className="text-gray-300">{evento.descripcion}</p>
+                            <p className="text-gray-400"><strong>Fecha:</strong> {new Date(evento.fecha).toLocaleDateString()}</p>
+
+                        </div>
+                    ))
+                ) : (
+                    <p>No hay eventos disponibles.</p>
+                )}
+            </div>
+        </div>
+    );
 }

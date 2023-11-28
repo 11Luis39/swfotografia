@@ -4,7 +4,8 @@ import {authRequired, isOrganizador} from '../middlewares/validateToken.js'
 
 const router = express.Router();
 
-router.get('/eventos', authRequired,isOrganizador, getEventos);
+
 router.post('/eventos',authRequired,isOrganizador,crearEvento);
+router.get('/eventos/:userId', authRequired, isOrganizador, getEventos);
 
 export default router;

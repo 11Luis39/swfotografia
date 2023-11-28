@@ -11,7 +11,7 @@ export default function LoginPage() {
     const roles = await signin(data);
 
     if (roles.includes('Organizador')) {
-      navigate('/eventos');
+      navigate('/Eventos');
     } else if (roles.includes('Fotografo')) {
       navigate('/fotografos');
     } else if (roles.includes('Invitado')) {

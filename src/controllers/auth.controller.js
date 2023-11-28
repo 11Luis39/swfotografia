@@ -4,29 +4,49 @@ import { createAccessToken } from '../libs/jwt.js'
 import Role from '../models/role.model.js'
 import jwt from 'jsonwebtoken'
 import { TOKEN_SECRET } from '../config.js'
+import {uploadImage} from '../libs/cloudinary.js'
 
 
 
 export const register = async (req, res) => {
-    const { username, email, password, roles } = req.body
+    const { username, email, password, roles } = req.body;
 
     try {
-        const hash = await bcrypt.hash(password, 10)
+        const hash = await bcrypt.hash(password, 10);
+
+        console.log(req.files);
+        let profilePictureUrls = [];
+        if (req.files && req.files.profilePictures) {
+            const files = Array.isArray(req.files.profilePictures) 
+                ? req.files.profilePictures 
+                : [req.files.profilePictures];
+        
+            for (const file of files) {
+                const result = await uploadImage(file.tempFilePath); // Asumiendo que esta función devuelve la respuesta de Cloudinary
+                profilePictureUrls.push(result.url);  // Guarda solo la URL de la imagen
+            }
+        }
+        
+
+        let foundRoles;
+        if (roles) {
+            foundRoles = await Role.find({ name: { $in: roles } });
+        } else {
+            const defaultRole = await Role.findOne({ name: "Invitado" });
+            foundRoles = [defaultRole];
+        }
+
+        if (foundRoles.some(role => ['organizador', 'invitado'].includes(role.name)) && profilePictureUrls.length !== 3) {
+            return res.status(400).send('Organizadores e invitados deben subir exactamente tres fotos de perfil.');
+        }
 
         const user = new User({
             username,
             email,
             password: hash,
-
+            profilePictures: profilePictureUrls,
+            roles: foundRoles.map(role => role._id)
         });
-
-        if (roles) {
-            const foundRoles = await Role.find({ name: { $in: roles } })
-            user.roles = foundRoles.map(role => role._id)
-        } else {
-            const role = await Role.findOne({ name: "Invitado" });
-            user.roles = [role._id]
-        }
 
         const userFound = await user.save();
 
@@ -40,17 +60,16 @@ export const register = async (req, res) => {
             id: userFound._id,
             username: userFound.username,
             email: userFound.email,
-            roles: userWithRoles.roles.map(role => role.name)
+            roles: userWithRoles.roles.map(role => role.name),
+            profilePictures: userFound.profilePictures
         });
 
-
-        //res.status(201).send('usuario registrado con exito.');
-
     } catch (error) {
-        res.status(500).send('Error en el servidor')
+        console.error(error); // Imprimir el error en la consola para depuración
+        res.status(500).send('Error en el servidor');
     }
+};
 
-}
 
 export const login = async (req, res) => {
     const { email, password } = req.body
@@ -118,7 +137,8 @@ export const verifyToken = async (req, res) => {
             id: userFound._id,
             username: userFound.username, 
             email: userFound.email,
-            roles: userWithRoles.roles.map(role => role.name)
+            roles: userWithRoles.roles.map(role => role.name),
+            profilePictures: userFound.profilePictures
         });
     });
 }

@@ -20,17 +20,17 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
 
-    const signup = async (user) => {
+    const signup = async (formData) => {
         try {
-            const response = await registerRequest(user);
+            const response = await registerRequest(formData);
+            console.log(response)
             console.log('Registro exitoso:', response.data);
             setUser(response.data);
-            setIsAuthenticated(true)
+            setIsAuthenticated(true);
         } catch (error) {
             console.error('Error en el registro:', error);
         }
-
-    }
+    };
 
     const signin = async (user) => {
         try {

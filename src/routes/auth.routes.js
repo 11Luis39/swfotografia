@@ -2,6 +2,8 @@ import {Router} from 'express'
 import { login, register, logout, profile, verifyToken} from '../controllers/auth.controller.js'
 import {authRequired} from '../middlewares/validateToken.js'
 import Role from '../models/role.model.js'
+//import multer from 'multer';
+//const upload = multer({ dest: 'upload/' });
 
 
 const router = Router();

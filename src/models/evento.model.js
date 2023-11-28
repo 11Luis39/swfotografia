@@ -13,9 +13,16 @@ const eventoSchema = new mongoose.Schema({
     }
     ,
     invitados: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        nombre: {
+            type: String,
+            required: true
+        },
+        email: {
+            type: String,
+            required: true
+        }
     }],
+    
     fotografos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

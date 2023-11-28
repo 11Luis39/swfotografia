@@ -1,7 +1,7 @@
-import mongoose, { mongo } from 'mongoose'
+import mongoose, { mongo } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    username:{
+    username: {
         type: String,
         require: true,
         trim: true,
@@ -19,10 +19,11 @@ const userSchema = new mongoose.Schema({
     roles: [{
         ref: "Role",
         type: mongoose.Schema.Types.ObjectId
-    }]
+    }],
+    profilePictures: [String]
 },
 {
     timestamps: true
 });
 
-export default mongoose.model('User', userSchema)
+export default mongoose.model('User', userSchema);

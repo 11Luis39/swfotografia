@@ -91,7 +91,7 @@ const crearEvento = async (req, res) => {
 
         const fotografosSeleccionados = await User.find({
             '_id': { $in: fotografos },
-           
+
         });
         console.log(fotografosSeleccionados);
 
@@ -114,4 +114,20 @@ const crearEvento = async (req, res) => {
     }
 };
 
-export { crearEvento, getEventos };
+
+const obtenerEventosDeFotografo = async (req, res) => {
+    try {
+
+        const userFound = await User.findById(req.user.id)
+        console.log(req.user.id)
+        // Busca eventos donde el array 'fotografos' contenga el ID del fotógrafo
+        const eventosDelFotografo = await Evento.find({ fotografos: { $in: [userFound] } })
+            .populate('fotografos', 'username email');
+
+        const nombresDeEventos = eventosDelFotografo.map(evento => evento.nombre);
+        res.status(200).json(nombresDeEventos);
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al obtener eventos del fotógrafo", error });
+    }
+};
+export { crearEvento, getEventos, obtenerEventosDeFotografo };

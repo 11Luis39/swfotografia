@@ -11,14 +11,21 @@ const subirFoto = async (req, res) => {
             return res.status(400).send('No se subieron archivos.');
         }
 
-        // 'foto' es el nombre del campo de entrada en el formulario de subida
-        const archivoFoto = req.files.foto;
+        const { eventoId, fotografoId, descripcion } = req.body;
 
-        // Subir archivo a Cloudinary
+        const evento = await Evento.findById(eventoId);
+        if (!evento) {
+            return res.status(404).send('Evento no encontrado.');
+        }
+
+        const esFotografoInvitado = evento.fotografos.includes(fotografoId);
+        if (!esFotografoInvitado) {
+            return res.status(403).send('Fotógrafo no está invitado al evento.');
+        }
+
+        const archivoFoto = req.files.foto;
         const result = await uploadImage(archivoFoto.tempFilePath);
 
-        // Extraer información adicional si es necesario
-        const { eventoId, fotografoId, descripcion } = req.body;
 
         // Crear una nueva instancia del modelo 'foto'
         const nuevaFoto = new foto({

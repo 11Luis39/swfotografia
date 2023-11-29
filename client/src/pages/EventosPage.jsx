@@ -5,7 +5,7 @@ import { useEventos } from '../context/EventosContest';
 import QRCodeReader from 'qrcode-reader';
 
 export default function Eventos() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { eventos, fetchEventos, registrarInvitacion } = useEventos();
     const navigate = useNavigate();
     const qr = new QRCodeReader();
@@ -42,14 +42,22 @@ export default function Eventos() {
         }
     }, [user, fetchEventos]);
 
+    const handleLogout = () => {
+        logout();
+        navigate('/login'); // Redirige al usuario a la página de login
+    };
+
     const irACrearEvento = () => navigate('/EventosCreate');
     return (
         <div className="bg-gray-800 min-h-screen p-5">
             <h1 className="text-3xl font-bold mb-5">Mis Eventos</h1>
+            <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                Cerrar Sesión
+            </button>
             <button onClick={irACrearEvento} className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                 Crear Nuevo Evento
             </button>
-            
+
             <div>
                 <input type="file" accept="image/*" onChange={handleImageUpload} />
             </div>

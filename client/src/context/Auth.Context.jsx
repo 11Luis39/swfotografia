@@ -76,6 +76,17 @@ export const AuthProvider = ({ children }) => {
         chekLogin();
     }, []);
 
+
+    const logout = () => {
+        Cookies.remove('token'); // Suponiendo que el token se almacene en una cookie llamada 'token'
+        setUser(null);
+        setIsAuthenticated(false);
+    };
+
+    useEffect(() => {
+
+    }, []);
+
     return (
         <AuthContext.Provider value={{
             signup,
@@ -83,7 +94,7 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated,
             signin,
             loading,
-
+            logout,
         }} >
             {children}
         </AuthContext.Provider>

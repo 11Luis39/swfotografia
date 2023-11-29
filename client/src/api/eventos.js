@@ -15,4 +15,5 @@ export async function getFotografos() {
 }
 export const getEventRequest = (userId) => axios.get(`/eventos/${userId}`);
 export const createEventRequest = (eventos) => axios.post(`/eventos`, eventos);
-export const RegisterUserEventRequest = (Qr) => axios.post(`/validar-qr`, {Qr});
+export const RegisterUserEventRequest = (Qr) => axios.post(`/validar-qr`, Qr);
+export const obtenerEventosRequest = (fotografoId)=> axios.get(`/eventos-de-fotografo`);

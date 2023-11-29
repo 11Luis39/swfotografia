@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect , useCallback} from "react";
-import { createEventRequest, getEventRequest,RegisterUserEventRequest } from '../api/eventos.js'
-import { useNavigate } from 'react-router-dom';
+import { createEventRequest, getEventRequest,RegisterUserEventRequest,obtenerEventosRequest } from '../api/eventos.js'
 
+import { useNavigate } from 'react-router-dom';
 
 
 const EventosContext = createContext();
@@ -55,7 +55,20 @@ export function EventosProvider({ children }) {
             console.error("Error al crear evento:", error);
         }
 
-    }
+    };
+
+    const obtenerEventosDeFotografo = useCallback (async () => {
+        try {
+            const response = await obtenerEventosRequest();
+            return response.data;
+        } catch (error) {
+            console.error('Error al obtener eventos del fotógrafo:', error);
+            return [];
+        }
+    });
+    
+
+    
 
     return (
         <EventosContext.Provider value={{
@@ -63,6 +76,7 @@ export function EventosProvider({ children }) {
             createEventos,
             fetchEventos,
             registrarInvitacion,
+            obtenerEventosDeFotografo,
 
         }}>
             {children}

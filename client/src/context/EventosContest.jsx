@@ -35,7 +35,9 @@ export function EventosProvider({ children }) {
 
     const createEventos = async (eventos) => {
         try {
+            console.log (eventos)
             const res = await createEventRequest(eventos)
+            
             const eventoCreado = res.data;
             // Actualizar la lista de eventos agregando el nuevo
             setEventos(currentEventos => [...currentEventos, eventoCreado]);

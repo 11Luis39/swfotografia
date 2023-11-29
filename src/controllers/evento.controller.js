@@ -49,23 +49,13 @@ const generarQR = async (texto) => {
 
 const crearEvento = async (req, res) => {
     try {
-        const { nombre, descripcion, fecha, organizador, invitados, fotografosIds  } = req.body;
+        const { nombre, descripcion, fecha, organizador, invitados, fotografos } = req.body;
         //const rolFotografo = await Role.findOne({ name: 'fotografo' });
         //const fotografos = await User.find({ roles: rolFotografo._id });
 
         if (invitados && invitados.some(inv => !inv.nombre || !inv.email)) {
             return res.status(400).send('Todos los invitados deben tener un nombre y un email.');
         }
-
-        const fotografosSeleccionados = await User.find({ 
-            '_id': { $in: fotografosIds },
-            'roles': { $in: [await Role.findOne({ name: 'fotografo' })._id] }
-        });
-
-        const nuevoEvento = new Evento({ nombre, descripcion, fecha, organizador, invitados, fotografos:fotografosIds });
-        console.log(nuevoEvento);
-
-        await nuevoEvento.save();
 
         const enviarInvitaciones = async (personas) => {
             await Promise.all(personas.map(async (persona) => {
@@ -98,20 +88,24 @@ const crearEvento = async (req, res) => {
             }));
         };
 
-        // Enviar invitaciones a los invitados especificados
-        if (invitados && invitados.length > 0) {
-            await enviarInvitaciones(invitados);
-        }
+        const fotografosSeleccionados = await User.find({
+            '_id': { $in: fotografos },
+           
+        });
+        console.log(fotografosSeleccionados);
 
-        // Enviar invitaciones a los fotógrafos
-        if (fotografosSeleccionados && fotografosSeleccionados.length > 0) {
-            const datosFotografos = fotografosSeleccionados.map(fotografo => ({
-                nombre: fotografo.username, 
+        const nuevoEvento = new Evento({ nombre, descripcion, fecha, organizador, invitados, fotografos: fotografos });
+        await nuevoEvento.save();
+
+        const invitaciones = [
+            ...invitados,
+            ...fotografosSeleccionados.map(fotografo => ({
+                nombre: fotografo.username,
                 email: fotografo.email
-            }));
-            await enviarInvitaciones(datosFotografos, true);
-        }
+            })),
+        ];
 
+        await enviarInvitaciones(invitaciones);
 
         res.status(201).json({ mensaje: 'Evento creado y correos electrónicos enviados' });
     } catch (error) {

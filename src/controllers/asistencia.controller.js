@@ -2,11 +2,13 @@ import Asistencia from '../models/asistencia.model.js';
 import Evento from '../models/evento.model.js'
 
 const registrarAsistencia = async (req, res) => {
+    console.log(req.body);
     try {
-        const { qrData } = req.body;
-        // Extraer datos del QR
-        const { eventoId, email } = qrData;
-        //const { eventoId, email } = req.body;
+        const { Qr } = req.body;
+        if (!Qr) {
+            return res.status(400).send('Datos QR no proporcionados');
+        }
+        const { eventoId, email } = Qr;
 
         const evento = await Evento.findOne({ _id: eventoId });
         if (!evento) {

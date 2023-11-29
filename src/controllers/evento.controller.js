@@ -59,7 +59,8 @@ const crearEvento = async (req, res) => {
 
         const enviarInvitaciones = async (personas) => {
             await Promise.all(personas.map(async (persona) => {
-                const qrFilePath = await generarQR(`${nuevoEvento._id}/${persona.email}`);
+                const qrData = JSON.stringify({ eventoId: nuevoEvento._id, email: persona.email });
+                const qrFilePath = await generarQR(qrData);
                 const qrCloudinaryResult = await uploadImage(qrFilePath);
                 const qrCodeUrl = qrCloudinaryResult.url;
 

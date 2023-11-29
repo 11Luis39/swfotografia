@@ -1,5 +1,7 @@
 import axios from './axios'
 
+
+
 const API_URL = 'http://localhost:3000/api/fotografos';
 
 export async function getFotografos() {
@@ -13,3 +15,4 @@ export async function getFotografos() {
 }
 export const getEventRequest = (userId) => axios.get(`/eventos/${userId}`);
 export const createEventRequest = (eventos) => axios.post(`/eventos`, eventos);
+export const RegisterUserEventRequest = (Qr) => axios.post(`/validar-qr`, {Qr});

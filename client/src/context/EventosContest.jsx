@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect , useCallback} from "react";
-import { createEventRequest, getEventRequest } from '../api/eventos.js'
+import { createEventRequest, getEventRequest,RegisterUserEventRequest } from '../api/eventos.js'
 import { useNavigate } from 'react-router-dom';
 
 
@@ -30,7 +30,16 @@ export function EventosProvider({ children }) {
 
     
 
-
+    const registrarInvitacion = async (qrData) => {
+        
+        try {
+            
+            const res = await RegisterUserEventRequest(qrData);
+            alert(res.data.mensaje); // Muestra un mensaje de éxito
+        } catch (error) {
+            alert('Hubo un error al registrar la invitación: ' + error.response.data.mensaje);
+        }
+    };
 
 
     const createEventos = async (eventos) => {
@@ -53,6 +62,7 @@ export function EventosProvider({ children }) {
             eventos,
             createEventos,
             fetchEventos,
+            registrarInvitacion,
 
         }}>
             {children}
